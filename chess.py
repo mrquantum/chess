@@ -1,4 +1,6 @@
 import pygame
+
+#Some general settings
 FPS=40
 stripx=40
 stripy=40
@@ -10,11 +12,13 @@ HEIGTH=800
 heigth=HEIGTH/8
 Totalwidth=WIDTH+stripx
 Totalheigth=HEIGTH+stripx
+alphabet='0abcdefghijklmn' #coordinates in chess start with 1=a so for convenience put a leading 0
+
+#initiate the python game
 pygame.init()
 screen=pygame.display.set_mode((Totalwidth,Totalheigth))
 clock=pygame.time.Clock()
 font = pygame.font.SysFont('comicsans', 30, True)
-alphabet='0abcdefghijklmn'
 
 def translatecoord(coordinate):
 	fileletter=coordinate[0]
@@ -44,7 +48,7 @@ def invtranslatecoord(numcoord):
 
 
 
-
+#do not like this piece of code yet -> too many classes but it does the trick
 class makecoordinatesletter(pygame.sprite.Sprite):
 	def __init__(self,i):
 		pygame.sprite.Sprite.__init__(self)
@@ -59,7 +63,7 @@ class makecoordinatesnumber(pygame.sprite.Sprite):
 		self.rect.center=(X0/2,HEIGTH-(-.5+i)*heigth)
 
 
-
+#a square is a class, it has a coordinate and (will) store what piece occupies it
 class square(pygame.sprite.Sprite):
 	def __init__(self,coordinate):
 		pygame.sprite.Sprite.__init__(self)
@@ -105,6 +109,8 @@ class Piece(pygame.sprite.Sprite):
 		print(self.coordinate)
 		print("*------~~~~~-------*")
 	
+	#This functions works for pieces that take as they move -> not for pawns 
+	#next step: include the board to not have to loop over all pieces
 	def checkmove(self,candidatecoordself,allpieces):
 		if self.isonboard(candidatecoordself)==False:
 			return 'Nomove'
@@ -122,7 +128,7 @@ class Piece(pygame.sprite.Sprite):
 						
 						
 					
-		
+#The pieces are classes that inherit from the class Piece. A pawn (in this terminology) is also a piece.	
 class Knight(Piece):
 	def __init__(self,color,coordinate,name):
 		Piece.__init__(self,color,coordinate,name)
@@ -154,7 +160,6 @@ class Knight(Piece):
 				move=self.checkmove(poscoord,allpieces)
 				if move!='Nomove':
 					self.movelist.append(move)
-
 class Bishop(Piece):
 	def __init__(self,color,coordinate,name):
 		Piece.__init__(self,color,coordinate,name)		
@@ -214,7 +219,6 @@ class Bishop(Piece):
 					break
 			else: #next one will also be not on board
 				break
-
 class Rook(Piece):
 	def __init__(self,color,coordinate,name):
 		Piece.__init__(self,color,coordinate,name)
@@ -304,22 +308,23 @@ class Pawn(Piece):
 			if move!='Nomove':
 				self.movelist.append(move)
 
+#some sprite groups for displaying. Chose to do it in different groups, so that sprites get blitted (terminology?) in the 
+#correct order
+
 all_sprites=pygame.sprite.Group()
 board_sprites=pygame.sprite.Group()
 white_sprites=pygame.sprite.Group()
 black_sprites=pygame.sprite.Group()
 letter_sprites_perimiter=pygame.sprite.Group()
 
+#Shows coordinates on the perimeter
 for i in range(1,9):
 	L=makecoordinatesletter(i)
 	N=makecoordinatesnumber(i)
-	#~ N=makecoordinates()
 	letter_sprites_perimiter.add(L)
 	letter_sprites_perimiter.add(N)
-	#~ letter_sprites_perimiter.add(N.number(i))
 
-
-
+#Makes the images for the board, but is not the board itself! NEED TO ADD FOR BOOKKEEPING
 board=[]		
 for i in range(0,8):
 	row=[]
@@ -328,7 +333,7 @@ for i in range(0,8):
 		board_sprites.add(square(invtranslatecoord((i+1,j+1))))
 	board.append(row)
 
-
+#All pieces are created here probably better to do this in an array -> this array already exist and is called white(or black)_sprites
 #Pawns
 Wpa=Pawn('white','a2','wpa')
 Wpb=Pawn('white','b2','wpb')
@@ -356,6 +361,7 @@ white_sprites.add(Wpe)
 white_sprites.add(Wpf)
 white_sprites.add(Wpg)
 white_sprites.add(Wph)
+
 white_sprites.add(Wnb)
 white_sprites.add(Wng)
 white_sprites.add(Wbc)
@@ -397,6 +403,7 @@ black_sprites.add(Bra)
 black_sprites.add(Brh)
 
 
+#The main gameloop
 run=True	
 while run:
 	for event in pygame.event.get():
