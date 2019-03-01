@@ -38,25 +38,8 @@ def translatecoord(coordinate):
 	
 	return [File,row]
 def invtranslatecoord(numcoord):
-	File=numcoord[0]
-	if File==1:
-		letter='a'
-	if File==2:
-		letter='b'
-	if File==3:
-		letter='c'
-	if File==4:
-		letter='d'
-	if File==5:
-		letter='e'
-	if File==6:
-		letter='f'
-	if File==7:
-		letter='g'
-	if File==8:
-		letter='h'
-	
-	return letter+str(numcoord[1])
+	File=alphabet[numcoord[0]]	
+	return File+str(numcoord[1])
 
 
 
